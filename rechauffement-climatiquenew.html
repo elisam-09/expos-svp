@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peut-on arrêter le réchauffement climatique ?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f0a;
+    --paper: #f5f0e8;
+    --ink: #1a1c14;
+    --accent: #c8e66b;
+    --accent2: #e66b2a;
+    --muted: #6b7255;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 4rem 5vw 5rem;
+    position: relative;
+    border-bottom: 1px solid #2a2e20;
+    background:
+      linear-gradient(to top, rgba(13,15,10,1) 0%, rgba(13,15,10,0.65) 45%, rgba(13,15,10,0.2) 100%),
+      url('https://images.pexels.com/photos/1430931/pexels-photo-1430931.jpeg?auto=compress&cs=tinysrgb&w=1600') center/cover no-repeat;
+  }
+
+  .hero-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 7.5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    max-width: 900px;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+  }
+
+  .hero-title .question { color: var(--accent); font-style: italic; }
+
+  .hero-subtitle {
+    margin-top: 3rem;
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 500px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.6s forwards;
+  }
+
+  .hero-temp {
+    position: absolute;
+    top: 4rem;
+    right: 5vw;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(5rem, 15vw, 14rem);
+    font-weight: 900;
+    color: var(--accent2);
+    opacity: 0.08;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    user-select: none;
+  }
+
+  /* CONTENT */
+  .content { max-width: 1200px; margin: 0 auto; padding: 0 5vw; }
+
+  section {
+    padding: 6rem 0;
+    border-bottom: 1px solid #1e2118;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  section.visible { opacity: 1; transform: none; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-top: 0.6rem;
+    min-width: 50px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .body-text { display: grid; grid-template-columns: 50px 1fr; gap: 0 2rem; }
+  .body-text p { font-size: 1.05rem; line-height: 1.85; color: #c8cdb8; margin-bottom: 1.4rem; grid-column: 2; }
+  .body-text p strong { color: var(--paper); font-weight: 500; }
+
+  /* TEMP SCALE */
+  .temp-scale {
+    display: flex;
+    align-items: stretch;
+    height: 80px;
+    margin: 3rem 0;
+    gap: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+  }
+
+  .temp-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    gap: 0.3rem;
+  }
+
+  .temp-val { font-size: 1.1rem; font-weight: 500; }
+  .temp-label { font-size: 0.55rem; opacity: 0.8; text-transform: uppercase; }
+
+  /* IMAGE BANNER */
+  .img-banner-wrap { margin: 3.5rem 0 0; overflow: hidden; position: relative; }
+  .img-banner {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.55) saturate(0.75);
+  }
+  .img-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.55rem 1rem;
+    background: #080a06;
+    border-left: 2px solid var(--accent);
+    margin-bottom: 3rem;
+  }
+
+  /* SPLIT BLOCK */
+  .split-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid #2a2e20;
+    overflow: hidden;
+  }
+
+  .split-block.rev { }
+  .split-block.rev .split-img-wrap { order: 2; }
+  .split-block.rev .split-text { order: 1; border-left: none; border-right: 1px solid #2a2e20; }
+
+  .split-img-wrap { overflow: hidden; }
+  .split-img {
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    object-fit: cover;
+    filter: brightness(0.6) saturate(0.7);
+    display: block;
+    transition: transform 0.6s ease, filter 0.4s;
+  }
+  .split-img-wrap:hover .split-img { transform: scale(1.03); filter: brightness(0.7) saturate(0.85); }
+
+  .split-text {
+    padding: 2.5rem;
+    background: #0f1109;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.9rem;
+    border-left: 1px solid #2a2e20;
+  }
+
+  .stag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .split-text h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .split-text p { font-size: 0.88rem; color: #8a9070; line-height: 1.7; }
+
+  .sstat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .sstat small {
+    font-size: 0.62rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 0.25rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* EXAMPLES GRID */
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5px;
+    margin: 2rem 0 3rem;
+    border: 1.5px solid #2a2e20;
+  }
+
+  .example-card {
+    background: #111410;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .example-card:hover { background: #161a10; }
+
+  .example-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .example-card:hover::before { transform: scaleX(1); }
+
+  .card-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+  }
+
+  .card-text { font-size: 0.88rem; color: #8a9070; line-height: 1.7; }
+
+  .card-stat {
+    margin-top: 1.2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .card-stat span { font-size: 0.7rem; color: var(--muted); display: block; margin-top: 0.1rem; letter-spacing: 0.1em; }
+
+  /* SOLUTIONS */
+  .solution-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid #2a2e20;
+    margin-bottom: 1.5px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .solution-item:hover { border-color: #4a5035; }
+
+  .solution-left { padding: 2.5rem; background: #0f1109; }
+  .solution-right { padding: 2.5rem; background: #0a0c08; border-left: 1px solid #2a2e20; }
+
+  .solution-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--accent);
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .solution-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+  }
+
+  .solution-desc { font-size: 0.9rem; color: #8a9070; line-height: 1.7; }
+
+  .solution-example { font-size: 0.85rem; color: #c8cdb8; line-height: 1.7; }
+  .solution-example strong { color: var(--accent); font-weight: 500; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  /* PULL QUOTE */
+  .pull-quote { margin: 3rem 0; padding: 2rem 0 2rem 2.5rem; border-left: 3px solid var(--accent2); }
+  .pull-quote p { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-style: italic; color: var(--paper); line-height: 1.5; }
+  .pull-quote cite { display: block; margin-top: 0.8rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-style: normal; }
+
+  /* OBSTACLES */
+  .obstacle-list { display: flex; flex-direction: column; gap: 1px; margin: 2rem 0; }
+  .obstacle { display: flex; align-items: flex-start; gap: 2rem; padding: 1.5rem 2rem; background: #0f1109; transition: background 0.2s; }
+  .obstacle:hover { background: #131508; }
+  .obstacle-icon { font-size: 1.4rem; min-width: 30px; margin-top: 0.1rem; }
+  .obstacle-content h4 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .obstacle-content p { font-size: 0.88rem; color: #8a9070; line-height: 1.6; }
+
+  /* CONCLUSION */
+  .conclusion-box {
+    background: linear-gradient(135deg, #141810 0%, #0d1008 100%);
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 3.5rem;
+    margin-top: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conclusion-box::before {
+    content: '°C';
+    position: absolute;
+    right: 2rem; top: -1rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem; font-weight: 900;
+    color: var(--accent); opacity: 0.04;
+  }
+
+  .conclusion-box p { font-size: 1.15rem; line-height: 1.9; color: #c8cdb8; margin-bottom: 1.2rem; }
+  .conclusion-box p:last-child { margin-bottom: 0; }
+  .conclusion-box p strong { color: var(--paper); font-weight: 500; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 700px) {
+    .solution-item, .split-block { grid-template-columns: 1fr; }
+    .split-block.rev .split-img-wrap { order: 0; }
+    .split-block.rev .split-text { order: 0; border-right: none; }
+    .split-text { border-left: none; border-top: 1px solid #2a2e20; }
+    .solution-right { border-left: none; border-top: 1px solid #2a2e20; }
+    .body-text { grid-template-columns: 1fr; }
+    .body-text p { grid-column: 1; }
+    .split-img { min-height: 200px; max-height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO — photo de fond : calotte glaciaire -->
+<div class="hero">
+  <div class="hero-temp">+1.5</div>
+  <div style="max-width:1200px; margin:0 auto; width:100%;">
+    <p class="hero-label">Essai · Environnement · 2025</p>
+    <h1 class="hero-title">
+      Peut-on vraiment <span class="question">arrêter</span> le réchauffement climatique ?
+    </h1>
+    <p class="hero-subtitle">Solutions réelles · Exemples concrets · Obstacles honnêtes</p>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- I. LE CONSTAT -->
+  <section id="s1">
+    <div class="section-header">
+      <span class="section-num">01 —</span>
+      <h2 class="section-title">Le constat : où en sommes-nous ?</h2>
+    </div>
+    <div class="body-text">
+      <p>Le réchauffement climatique n'est plus une projection : c'est une réalité mesurable. La planète a déjà gagné environ <strong>+1,2 °C</strong> par rapport à l'ère préindustrielle. L'Accord de Paris (2015) fixait un plafond à <strong>+1,5 °C</strong> pour éviter les effets les plus catastrophiques — seuil que nous pourrions franchir dès les années 2030 selon le GIEC.</p>
+      <p>La question n'est donc plus « est-ce que ça se passe ? » mais « est-ce qu'on peut encore agir ? ». La réponse courte : <strong>oui, mais le temps presse et les efforts doivent être massifs, coordonnés, et immédiats</strong>.</p>
+    </div>
+
+    <div class="temp-scale">
+      <div class="temp-block" style="background:#1a3a20;"><span class="temp-val" style="color:#6be685;">+1.0°C</span><span class="temp-label">Aujourd'hui<br>presque</span></div>
+      <div class="temp-block" style="background:#2a3a10;"><span class="temp-val" style="color:#c8e66b;">+1.2°C</span><span class="temp-label">Réel<br>actuel</span></div>
+      <div class="temp-block" style="background:#3a3010;"><span class="temp-val" style="color:#e6c86b;">+1.5°C</span><span class="temp-label">Objectif<br>Paris</span></div>
+      <div class="temp-block" style="background:#3a2010;"><span class="temp-val" style="color:#e6966b;">+2.0°C</span><span class="temp-label">Seuil<br>danger</span></div>
+      <div class="temp-block" style="background:#3a1010;"><span class="temp-val" style="color:#e66b6b;">+3.0°C</span><span class="temp-label">Trajectoire<br>actuelle</span></div>
+      <div class="temp-block" style="background:#2a0808;"><span class="temp-val" style="color:#c84040;">+4.0°C</span><span class="temp-label">Scénario<br>catastrophe</span></div>
+    </div>
+
+    <div class="body-text">
+      <p>Ce qui est encore possible : limiter le réchauffement à <strong>+1,5 °C ou +2 °C</strong>, ce qui ferait une différence énorme en termes de montée des eaux, d'événements extrêmes et de biodiversité. "Arrêter" ne signifie pas tout annuler — c'est stopper la spirale.</p>
+    </div>
+  </section>
+
+  <!-- II. PREUVES QUE ÇA MARCHE -->
+  <section id="s2">
+    <div class="section-header">
+      <span class="section-num">02 —</span>
+      <h2 class="section-title">La preuve par l'exemple : ça marche déjà</h2>
+    </div>
+    <div class="body-text">
+      <p>Avant de parler de solutions théoriques, regardons ce qui fonctionne <strong>concrètement dans le monde réel</strong>. Ces succès montrent que la transition est possible — pas utopique.</p>
+    </div>
+
+    <!-- IMAGE : éoliennes offshore Danemark -->
+    <div class="split-block">
+      <div class="split-img-wrap">
+        <img class="split-img"
+          src="https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=900"
+          alt="Éoliennes offshore en mer"
+          onerror="this.parentElement.style.background='#1a2a15'; this.style.display='none'">
+      </div>
+      <div class="split-text">
+        <span class="stag">🇩🇰 Énergie · Danemark</span>
+        <h3>L'éolien offshore danois</h3>
+        <p>Le Danemark produit régulièrement plus de 100 % de sa consommation électrique via le vent. En 2023, il a exporté de l'énergie propre vers ses voisins.</p>
+        <div class="sstat">84%<small>Part des renouvelables dans l'électricité danoise</small></div>
+      </div>
+    </div>
+
+    <!-- IMAGE : forêt Costa Rica -->
+    <div class="split-block rev">
+      <div class="split-img-wrap">
+        <img class="split-img"
+          src="https://images.pexels.com/photos/975771/pexels-photo-975771.jpeg?auto=compress&cs=tinysrgb&w=900"
+          alt="Forêt tropicale Costa Rica"
+          onerror="this.parentElement.style.background='#1a2a15'; this.style.display='none'">
+      </div>
+      <div class="split-text">
+        <span class="stag">🌳 Nature · Costa Rica</span>
+        <h3>La reforestation à grande échelle</h3>
+        <p>Le Costa Rica a inversé sa déforestation : couverture forestière passée de 26 % dans les années 80 à plus de 52 % aujourd'hui, grâce à une politique de paiement pour services écosystémiques.</p>
+        <div class="sstat">+52%<small>Couverture forestière actuelle (vs 26% en 1983)</small></div>
+      </div>
+    </div>
+
+    <!-- Grille des autres exemples -->
+    <div class="examples-grid">
+      <div class="example-card">
+        <div class="card-tag">🇳🇴 Mobilité · Norvège</div>
+        <div class="card-title">La révolution électrique norvégienne</div>
+        <p class="card-text">En 2023, plus de 90 % des nouvelles voitures vendues en Norvège étaient électriques — résultat d'une politique cohérente sur 10 ans.</p>
+        <div class="card-stat">90%<span>Part des VE dans les nouvelles ventes 2023</span></div>
+      </div>
+      <div class="example-card">
+        <div class="card-tag">🇨🇳 Solaire · Chine</div>
+        <div class="card-title">Le boom solaire chinois</div>
+        <p class="card-text">La Chine a fait chuter le coût des panneaux solaires de 90 % en 10 ans — rendant le solaire moins cher que le charbon partout sur Terre.</p>
+        <div class="card-stat">−90%<span>Baisse du coût du solaire depuis 2010</span></div>
+      </div>
+      <div class="example-card">
+        <div class="card-tag">🇬🇧 Industrie · Royaume-Uni</div>
+        <div class="card-title">La fin du charbon britannique</div>
+        <p class="card-text">En 2024, le RU a fermé sa dernière centrale à charbon. En 1990, le charbon représentait 70 % de son électricité.</p>
+        <div class="card-stat">0<span>Centrale à charbon active au RU depuis 2024</span></div>
+      </div>
+      <div class="example-card">
+        <div class="card-tag">🌊 Couche d'ozone · Mondial</div>
+        <div class="card-title">Le précédent du Protocole de Montréal</div>
+        <p class="card-text">Le Protocole de Montréal (1987) a banni les CFC. La couche d'ozone se reconstitue et sera totalement réparée vers 2060 — preuve qu'une action globale coordonnée fonctionne.</p>
+        <div class="card-stat">2060<span>Réparation totale prévue de la couche d'ozone</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- III. SOLUTIONS RÉELLES -->
+  <section id="s3">
+    <div class="section-header">
+      <span class="section-num">03 —</span>
+      <h2 class="section-title">Les solutions réelles et leur échelle</h2>
+    </div>
+    <div class="body-text">
+      <p>Voici les leviers principaux identifiés par le GIEC et Project Drawdown, avec ce qu'ils impliquent concrètement — et ce qui se fait déjà.</p>
+    </div>
+
+    <!-- IMAGE : panneaux solaires -->
+    <div class="img-banner-wrap">
+      <img class="img-banner"
+        src="https://images.pexels.com/photos/159397/solar-panel-array-power-sun-electricity-159397.jpeg?auto=compress&cs=tinysrgb&w=1400"
+        alt="Champ de panneaux solaires"
+        onerror="this.style.display='none'">
+      <p class="img-caption">Ferme solaire — le coût du photovoltaïque a chuté de 90 % entre 2010 et 2023</p>
+    </div>
+
+    <div class="obstacle-list" style="gap:1.5px;">
+
+      <div class="solution-item">
+        <div class="solution-left">
+          <div class="solution-num">01</div>
+          <div class="solution-name">Décarboner l'électricité</div>
+          <p class="solution-desc">Remplacer le charbon, le gaz et le pétrole par solaire, éolien, nucléaire et hydraulique. C'est le levier le plus impactant — l'électricité alimente tout le reste.</p>
+        </div>
+        <div class="solution-right">
+          <p class="solution-example"><strong>→ Concret :</strong> L'Inde a installé 73 GW de solaire en 2023. L'UE a atteint 44 % d'électricité renouvelable. La France et la Suède émettent très peu de CO₂ par kWh grâce au nucléaire + hydraulique.</p>
+        </div>
+      </div>
+
+      <div class="solution-item">
+        <div class="solution-left">
+          <div class="solution-num">02</div>
+          <div class="solution-name">Électrifier le transport</div>
+          <p class="solution-desc">Voitures électriques, trains, vélos, réduction des vols courts. Le transport représente ~25 % des émissions mondiales.</p>
+        </div>
+        <div class="solution-right">
+          <p class="solution-example"><strong>→ Concret :</strong> 1 voiture neuve sur 5 vendue dans le monde en 2023 était électrique. Amsterdam : 63 % des déplacements à vélo après 1 milliard € investi en pistes cyclables.</p>
+        </div>
+      </div>
+
+      <div class="solution-item">
+        <div class="solution-left">
+          <div class="solution-num">03</div>
+          <div class="solution-name">Transformer l'alimentation</div>
+          <p class="solution-desc">L'agriculture et l'élevage représentent ~20 % des émissions mondiales via le méthane et le protoxyde d'azote.</p>
+        </div>
+        <div class="solution-right">
+          <p class="solution-example"><strong>→ Concret :</strong> Les Pays-Bas ont payé des agriculteurs pour réduire leur cheptel. Singapour a légalisé la viande de laboratoire dès 2020. L'agriculture régénératrice séquestre du carbone dans les sols.</p>
+        </div>
+      </div>
+
+      <div class="solution-item">
+        <div class="solution-left">
+          <div class="solution-num">04</div>
+          <div class="solution-name">Décarboner l'industrie lourde</div>
+          <p class="solution-desc">Acier, ciment, chimie — ~30 % des émissions, très difficiles à électrifier. L'hydrogène vert est la solution émergente.</p>
+        </div>
+        <div class="solution-right">
+          <p class="solution-example"><strong>→ Concret :</strong> SSAB (Suède) a produit le premier acier vert à l'hydrogène en 2021. L'usine de Brevik (Norvège) capte 90 % de ses émissions depuis 2024.</p>
+        </div>
+      </div>
+
+      <!-- IMAGE : forêt + solution nature -->
+      <div class="solution-item" style="border:none; margin-top:1.5px;">
+        <div class="split-img-wrap" style="min-height:280px;">
+          <img class="split-img"
+            src="https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=900"
+            alt="Forêt tropicale vue aérienne"
+            onerror="this.parentElement.style.background='#0f1a0f'; this.style.display='none'">
+        </div>
+        <div class="solution-right" style="display:flex; flex-direction:column; justify-content:center; gap:1rem;">
+          <div class="solution-num" style="opacity:0.3;">05</div>
+          <div class="solution-name">Protéger et restaurer la nature</div>
+          <p class="solution-desc">Forêts, tourbières et mangroves absorbent naturellement du CO₂. Les protéger est l'une des solutions les plus rentables.</p>
+          <p class="solution-example"><strong>→ Concret :</strong> L'initiative 30×30 vise à protéger 30 % des terres et océans d'ici 2030 (190 pays signataires). L'Éthiopie a planté 350 millions d'arbres en une journée en 2019.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pull-quote">
+      <p>« Les solutions existent. Elles sont économiquement viables. Il manque principalement la vitesse d'exécution et la volonté politique. »</p>
+      <cite>— Synthèse GIEC, Rapport AR6, 2022</cite>
+    </div>
+  </section>
+
+  <!-- IV. OBSTACLES -->
+  <section id="s4">
+    <div class="section-header">
+      <span class="section-num">04 —</span>
+      <h2 class="section-title">Les obstacles réels à surmonter</h2>
+    </div>
+    <div class="body-text">
+      <p>Un essai honnête ne peut pas ignorer les blocages. Ils sont réels, structurels, et souvent sous-estimés dans le discours climatique optimiste.</p>
+    </div>
+
+    <div class="obstacle-list">
+      <div class="obstacle">
+        <span class="obstacle-icon">🏛️</span>
+        <div class="obstacle-content">
+          <h4>L'inertie politique et le court-termisme</h4>
+          <p>Les gouvernements pensent en cycles électoraux de 4-5 ans. Le climat se joue sur 30-50 ans. Les 7 000 milliards de dollars de subventions aux énergies fossiles en 2022 (FMI) illustrent ce paradoxe.</p>
+        </div>
+      </div>
+      <div class="obstacle">
+        <span class="obstacle-icon">⚖️</span>
+        <div class="obstacle-content">
+          <h4>L'injustice climatique Nord-Sud</h4>
+          <p>Les pays qui ont le moins contribué au réchauffement en subissent les pires conséquences. La promesse de 100 milliards $ annuels de financement climatique, faite en 2009, n'a jamais été tenue.</p>
+        </div>
+      </div>
+      <div class="obstacle">
+        <span class="obstacle-icon">🔄</span>
+        <div class="obstacle-content">
+          <h4>Les points de basculement irréversibles</h4>
+          <p>La fonte du permafrost libère du méthane, qui réchauffe encore plus, qui fait fondre encore plus de permafrost. Ces boucles auto-entretenues rendent la fenêtre d'action 2020-2030 critiquement importante.</p>
+        </div>
+      </div>
+      <div class="obstacle">
+        <span class="obstacle-icon">💰</span>
+        <div class="obstacle-content">
+          <h4>Le financement de la transition</h4>
+          <p>L'AIE estime qu'il faut 4 000 milliards de dollars d'investissements propres par an d'ici 2030 — soit 3× ce qui est investi aujourd'hui.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- V. CONCLUSION -->
+  <section id="s5" style="border-bottom:none;">
+    <div class="section-header">
+      <span class="section-num">05 —</span>
+      <h2 class="section-title">Conclusion : arrêter ou ralentir ?</h2>
+    </div>
+    <div class="body-text">
+      <p>La réponse dépend de ce qu'on entend par « arrêter ». Revenir à l'état de 1850 ? Non. <strong>Stopper l'aggravation et limiter les dégâts ?</strong> Oui, c'est encore possible.</p>
+    </div>
+
+    <div class="conclusion-box">
+      <p>Les <strong>technologies existent</strong> : solaire, éolien, nucléaire, VE, reforestation. Leur coût a chuté de façon spectaculaire.</p>
+      <p>Les <strong>exemples concrets existent</strong> : Danemark, Norvège, Costa Rica, Royaume-Uni. Des pays ont montré qu'on peut découpler croissance et émissions.</p>
+      <p>Ce qui manque, c'est <strong>la vitesse, l'échelle et la justice</strong> : aller 5 à 10 fois plus vite qu'aujourd'hui, dans tous les pays, sans laisser les plus vulnérables derrière.</p>
+      <p>La bonne question n'est pas « peut-on ? » mais : <strong>combien de degrés choisissons-nous collectivement d'accepter ?</strong> Chaque dixième de degré évité compte.</p>
+    </div>
+
+    <div style="margin-top:3rem; padding:2rem; background:#0a0c08; border:1px solid #2a2e20; font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--muted); line-height:1.8;">
+      <strong style="color:var(--accent); display:block; margin-bottom:0.8rem;">Sources principales</strong>
+      GIEC — Rapport de synthèse AR6 (2022) · Project Drawdown — Solutions climatiques ·
+      Agence Internationale de l'Énergie (AIE) — World Energy Outlook 2023 ·
+      FMI — Fossil Fuel Subsidies Report 2023 · Our World in Data — Energy & Climate
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
